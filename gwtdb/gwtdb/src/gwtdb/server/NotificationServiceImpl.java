@@ -25,7 +25,7 @@ public class NotificationServiceImpl extends RemoteServiceServlet implements Not
 	
 	public static void notifyClients(String string) {
 		for (final String clientId : clients) {
-			service.sendMessage(new ChannelMessage(clientId, "new entity added or updated"));
+			service.sendMessage(new ChannelMessage(clientId, "[server] new entity added or updated"));
 		}		
 	}
 }
