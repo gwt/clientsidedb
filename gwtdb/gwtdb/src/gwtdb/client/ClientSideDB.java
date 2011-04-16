@@ -11,7 +11,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class ClientSideDB implements ReaderServiceAsync {
 	public interface Display {
 		void append(String message);
-		HasClickHandlers getModifyButton();
+		HasClickHandlers getNewButton();
+		HasClickHandlers getDeleteBtn();
+		HasClickHandlers getSaveBtn();
+		HasClickHandlers getCancelBtn();
+
+		void insert(ClientEntity entity);
 	}
 
 	private static ClientSideDB instance;
@@ -29,11 +34,11 @@ public class ClientSideDB implements ReaderServiceAsync {
 		}
 		return instance;
 	}
-	
+
 	private ClientSideDB() {
 		newChannelMessage("registering client...");
-		
-		view.getModifyButton().addClickHandler(new ClickHandler() {
+
+		view.getNewButton().addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				modifier.put(new ClientEntity("Contact", 1), new AsyncCallback<Void>() {
@@ -41,14 +46,14 @@ public class ClientSideDB implements ReaderServiceAsync {
 					public void onSuccess(Void result) {
 						newChannelMessage("added contact");
 					}
-					
+
 					@Override
 					public void onFailure(Throwable caught) {
 					}
 				});
 			}
 		});
-		
+
 		notifier.registerClient(IdCreator.get(), new AsyncCallback<String>() {
 			@Override
 			public void onSuccess(String result) {
@@ -65,11 +70,11 @@ public class ClientSideDB implements ReaderServiceAsync {
 		// register handler for dirty-ing of elements -> defer cache updating to latest possible point.
 		// bus.addHandler(type, handler)
 	}
-	
+
 	private static void newChannelMessage(final String message) {
 		view.append(message);
 	}
-	
+
 	private native void setupChannel(final String token) /*-{
 		var channel = new $wnd.goog.appengine.Channel(token);
 		var socket = channel.open();
@@ -92,8 +97,25 @@ public class ClientSideDB implements ReaderServiceAsync {
 	}
 
 	@Override
-	public void getAll(String[] kinds, AsyncCallback<HashMap<String, ClientEntity[]>> callback) {
-		// TODO Auto-generated method stub
+	public void getAll(final String[] kinds, final AsyncCallback<HashMap<String, ClientEntity[]>> callback) {
+		if (cache.isEmpty()) {
+			reader.getAll(kinds, new AsyncCallback<HashMap<String, ClientEntity[]>>() {
+				@Override
+				public void onSuccess(HashMap<String, ClientEntity[]> result) {
+					callback.onSuccess(cache = result);
+				}
 
+				@Override
+				public void onFailure(Throwable caught) {
+					newChannelMessage("error getting all contacts");
+				}
+			});
+		} else {
+			callback.onSuccess(cache);
+		}
+	}
+
+	public void addEntity(final ClientEntity e) {
+		view.insert(e);
 	}
 }

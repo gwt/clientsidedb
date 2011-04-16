@@ -1,15 +1,28 @@
 package gwtdb.client;
 
+import java.util.HashMap;
+
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
 public class Gwtdb implements EntryPoint {
 	public void onModuleLoad() {
-		final ChannelLogView view = new ChannelLogView();
+		final SampleView view = new SampleView();
 		RootLayoutPanel.get().add(view);
-		ClientSideDB.instance(view);
+		final ClientSideDB db = ClientSideDB.instance(view);
+		
+		db.getAll(new String[]{"Contact"}, new AsyncCallback<HashMap<String,ClientEntity[]>>() {
+			@Override
+			public void onSuccess(HashMap<String, ClientEntity[]> result) {
+				for (final ClientEntity e: result.get("Contact")) {
+					db.addEntity(e);
+				}
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+		});
 	}
 }
