@@ -1,87 +1,58 @@
 package gwtdb.client;
 
+import gwtdb.client.SamplePresenter.Display;
+
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ClientSideDB implements ReaderServiceAsync {
-	public interface Display {
-		void append(String message);
-		HasClickHandlers getNewButton();
-		HasClickHandlers getDeleteBtn();
-		HasClickHandlers getSaveBtn();
-		HasClickHandlers getCancelBtn();
-
-		void insert(ClientEntity entity);
-	}
-
 	private static ClientSideDB instance;
 	private static Display view;
+	private static EventBus bus;
 	private static final ReaderServiceAsync reader = GWT.create(ReaderService.class);
 	private static final ModifierServiceAsync modifier = GWT.create(ModifierService.class);
 	private static final NotificationServiceAsync notifier = GWT.create(NotificationService.class);
 
 	private HashMap<String, ClientEntity[]> cache = new HashMap<String, ClientEntity[]>();
-
-	public static ClientSideDB instance(final Display view) {
+	private boolean dirty = false;
+	
+	public static ClientSideDB instance(final Display view, final EventBus bus) {
 		if (null == instance) {
 			ClientSideDB.view = view;
+			ClientSideDB.bus = bus;
 			instance = new ClientSideDB();
 		}
 		return instance;
 	}
 
 	private ClientSideDB() {
-		newChannelMessage("registering client...");
-
-		view.getNewButton().addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				modifier.put(new ClientEntity("Contact", 1), new AsyncCallback<Void>() {
-					@Override
-					public void onSuccess(Void result) {
-						newChannelMessage("added contact");
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-					}
-				});
-			}
-		});
-
 		notifier.registerClient(IdCreator.get(), new AsyncCallback<String>() {
 			@Override
 			public void onSuccess(String result) {
-				newChannelMessage("done.");
+				view.append("peter");
 				setupChannel(result);
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				newChannelMessage("error registering client " + caught.getLocalizedMessage());
 			}
 		});
-
-		// register handler for dirty-ing of elements -> defer cache updating to latest possible point.
-		// bus.addHandler(type, handler)
 	}
 
-	private static void newChannelMessage(final String message) {
-		view.append(message);
+	private static void update() {
+		bus.fireEvent(new UpdateEvent());
+		view.append("update");
 	}
-
+	
 	private native void setupChannel(final String token) /*-{
 		var channel = new $wnd.goog.appengine.Channel(token);
 		var socket = channel.open();
 		socket.onmessage = function(evt) {
-			@gwtdb.client.ClientSideDB::newChannelMessage(Ljava/lang/String;)(evt.data);
+			@gwtdb.client.ClientSideDB::update();
 		};
-		@gwtdb.client.ClientSideDB::newChannelMessage(Ljava/lang/String;)("setup channel");
 	}-*/;
 
 	@Override
@@ -98,16 +69,16 @@ public class ClientSideDB implements ReaderServiceAsync {
 
 	@Override
 	public void getAll(final String[] kinds, final AsyncCallback<HashMap<String, ClientEntity[]>> callback) {
-		if (cache.isEmpty()) {
+		if (dirty || cache.isEmpty()) {
 			reader.getAll(kinds, new AsyncCallback<HashMap<String, ClientEntity[]>>() {
 				@Override
 				public void onSuccess(HashMap<String, ClientEntity[]> result) {
 					callback.onSuccess(cache = result);
+					dirty = false;
 				}
 
 				@Override
 				public void onFailure(Throwable caught) {
-					newChannelMessage("error getting all contacts");
 				}
 			});
 		} else {
@@ -117,5 +88,24 @@ public class ClientSideDB implements ReaderServiceAsync {
 
 	public void addEntity(final ClientEntity e) {
 		view.insert(e);
+	}
+
+	public void put(ClientEntity entity, final AsyncCallback<Void> callback) {
+		dirty = true;
+		
+		modifier.put(entity, new AsyncCallback<Void>() {
+			@Override
+			public void onSuccess(Void result) {
+				callback.onSuccess(result);
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+		});
+	}
+	
+	public static EventBus getBus() {
+		return bus;
 	}
 }
