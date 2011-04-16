@@ -18,20 +18,20 @@ public class ReadServiceImpl extends AbstractDatastoreService implements ReaderS
 
 	@Override
 	public HashMap<String, ClientEntity[]> getAll(final String[] kinds) {
-		final HashMap<String, ClientEntity[]> res = new HashMap<String, ClientEntity[]>();
+		final HashMap<String, ClientEntity[]> allKinds = new HashMap<String, ClientEntity[]>();
 		
 		for (final String kind: kinds) {
-			final ArrayList<ClientEntity> client = new ArrayList<ClientEntity>();
+			final ArrayList<ClientEntity> clientEntities = new ArrayList<ClientEntity>();
 			final PreparedQuery pq = db.prepare(new Query(kind));
 			
 			for (final Entity entity: pq.asList(FetchOptions.Builder.withLimit(999)).toArray(new Entity[0])) {
-				client.add(copy(entity));
+				clientEntities.add(copy(entity));
 			}
 			
-			res.put(kind, client.toArray(new ClientEntity[0]));
+			allKinds.put(kind, clientEntities.toArray(new ClientEntity[0]));
 		}
 		
-		return new HashMap<String, ClientEntity[]>();
+		return allKinds;
 	}
 
 	@Override

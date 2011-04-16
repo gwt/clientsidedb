@@ -12,7 +12,7 @@ public class ModificationServiceImpl extends AbstractDatastoreService implements
 	private static final DatastoreService db = DatastoreServiceFactory.getDatastoreService();
 
 	@Override
-	public void put(ClientEntity entity) {
+	public void put(final ClientEntity entity) {
 		final Entity e = new Entity(entity.getKind());
 		for (final String key : entity.keys()) {
 			e.setProperty(key, entity.get(key));

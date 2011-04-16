@@ -1,6 +1,6 @@
 package gwtdb.client;
 
-import gwtdb.client.CachingLocalDataStore.Display;
+import gwtdb.client.ClientSideDB.Display;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.HasClickHandlers;

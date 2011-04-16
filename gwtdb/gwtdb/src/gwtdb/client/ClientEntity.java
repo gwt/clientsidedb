@@ -8,7 +8,7 @@ public class ClientEntity implements Serializable {
 
 	private long id;
 	private String kind;
-	private HashMap<String, Object> data;
+	private HashMap<String, Object> data = new HashMap<String, Object>();
 	
 	public ClientEntity() {
 	}

@@ -10,6 +10,6 @@ public class Gwtdb implements EntryPoint {
 	public void onModuleLoad() {
 		final ChannelLogView view = new ChannelLogView();
 		RootLayoutPanel.get().add(view);
-		new CachingLocalDataStore(view);
+		ClientSideDB.instance(view);
 	}
 }
