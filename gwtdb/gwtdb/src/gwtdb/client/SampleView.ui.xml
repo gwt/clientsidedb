@@ -23,6 +23,6 @@
 				<g:FlexTable ui:field="form" />
 			</g:VerticalPanel>
 		</g:HorizontalPanel>
-		<g:Label ui:field="log" />
+		<g:HTML ui:field="log" />
 	</g:VerticalPanel>
 </ui:UiBinder> 

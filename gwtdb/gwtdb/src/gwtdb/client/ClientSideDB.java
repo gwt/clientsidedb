@@ -17,7 +17,7 @@ public class ClientSideDB implements ReaderServiceAsync {
 	private static final NotificationServiceAsync notifier = GWT.create(NotificationService.class);
 
 	private HashMap<String, ClientEntity[]> cache = new HashMap<String, ClientEntity[]>();
-	private boolean dirty = false;
+	private static boolean dirty = false;
 	
 	public static ClientSideDB instance(final Display view, final EventBus bus) {
 		if (null == instance) {
@@ -32,7 +32,7 @@ public class ClientSideDB implements ReaderServiceAsync {
 		notifier.registerClient(IdCreator.get(), new AsyncCallback<String>() {
 			@Override
 			public void onSuccess(String result) {
-				view.append("peter");
+				view.append("notified");
 				setupChannel(result);
 			}
 
@@ -42,16 +42,18 @@ public class ClientSideDB implements ReaderServiceAsync {
 		});
 	}
 
-	private static void update() {
+	// Updates are only received (i.e. this method is only called) when it has one parameter (?)
+	private static void onUpdate(final String data) {
+		dirty = true;
 		bus.fireEvent(new UpdateEvent());
-		view.append("update");
+		view.append("update: " + data);
 	}
 	
 	private native void setupChannel(final String token) /*-{
 		var channel = new $wnd.goog.appengine.Channel(token);
 		var socket = channel.open();
 		socket.onmessage = function(evt) {
-			@gwtdb.client.ClientSideDB::update();
+			@gwtdb.client.ClientSideDB::onUpdate(Ljava/lang/String;)(evt.data);
 		};
 	}-*/;
 

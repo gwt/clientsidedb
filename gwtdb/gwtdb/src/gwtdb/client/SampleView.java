@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
@@ -24,7 +23,7 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 public class SampleView extends Composite implements Display {
 	public enum View {
-		CREATE, EDIT, DETAIL, EMPTY
+		CREATE, EDIT, EMPTY
 	}
 
 	private static SampleUiBinder uiBinder = GWT.create(SampleUiBinder.class);
@@ -45,12 +44,12 @@ public class SampleView extends Composite implements Display {
 		saveBtn.setVisible(view == View.EDIT || view == View.CREATE);
 
 		cancelBtn.setVisible(view == View.EDIT);
-		deleteBtn.setVisible(view == View.DETAIL);
+		deleteBtn.setVisible(view == View.EDIT);
 	}
 
 	private void configureForm(final View empty, final ClientEntity entity) {
 		form.clear(true);
-		
+
 		switch (empty) {
 		case CREATE:
 			name.setText("");
@@ -71,14 +70,6 @@ public class SampleView extends Composite implements Display {
 		case EMPTY:
 			form.setText(0, 0, "Name");
 			form.setText(1, 0, "E-Mail");
-			break;
-		case DETAIL:
-			form.setText(0, 0, "ID");
-			form.setText(1, 0, "Name");
-			form.setText(2, 0, "E-Mail");
-			form.setText(0, 1, String.valueOf(entity.getId()));
-			form.setText(1, 1, String.valueOf(entity.get("Name")));
-			form.setText(2, 1, String.valueOf(entity.get("Mail")));
 			break;
 		default:
 			break;
@@ -129,7 +120,7 @@ public class SampleView extends Composite implements Display {
 		model.addSelectionChangeHandler(new Handler() {
 			@Override
 			public void onSelectionChange(SelectionChangeEvent event) {
-				switchView(View.DETAIL, model.getSelectedObject());
+				switchView(View.EDIT, model.getSelectedObject());
 			}
 		});
 		table.setSelectionModel(model);
@@ -142,7 +133,7 @@ public class SampleView extends Composite implements Display {
 	TextBox mail = new TextBox();
 
 	@UiField
-	Label log;
+	HTML log;
 	@UiField
 	Button newBtn;
 	@UiField
@@ -159,7 +150,7 @@ public class SampleView extends Composite implements Display {
 
 	@Override
 	public void append(String message) {
-		log.setText(log.getText() + message);
+		log.setHTML(log.getHTML() + "<br />" + message);
 	}
 
 	@Override
@@ -194,7 +185,7 @@ public class SampleView extends Composite implements Display {
 			tableDataProvider.getList().add(e);
 		}
 	}
-	
+
 	@Override
 	public HasKeyUpHandlers getNameBox() {
 		return name;
