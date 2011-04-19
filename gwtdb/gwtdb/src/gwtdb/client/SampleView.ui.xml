@@ -10,22 +10,24 @@
 			margin-left: 10px;
 		}
 	</ui:style>
-	<g:VerticalPanel>
-		<g:HorizontalPanel addStyleNames="{style.marginBottom}">
-			<g:VerticalPanel>
-				<c:CellTable ui:field="table" />
-				<c:SimplePager ui:field="pager" />
-			</g:VerticalPanel>
-			<g:VerticalPanel addStyleNames="{style.marginLeft}">
-				<g:HorizontalPanel>
-					<g:Button ui:field="newBtn">New</g:Button>
-					<g:Button ui:field="cancelBtn">Cancel</g:Button>
-					<g:Button ui:field="saveBtn">Save</g:Button>
-					<g:Button ui:field="deleteBtn">Delete</g:Button>
-				</g:HorizontalPanel>
-				<g:FlexTable ui:field="form" />
-			</g:VerticalPanel>
-		</g:HorizontalPanel>
-		<g:HTML ui:field="log" />
-	</g:VerticalPanel>
+	<g:ScrollPanel>
+		<g:VerticalPanel>
+			<g:HorizontalPanel addStyleNames="{style.marginBottom}">
+				<g:VerticalPanel>
+					<c:CellTable ui:field="table" />
+					<c:SimplePager ui:field="pager" />
+				</g:VerticalPanel>
+				<g:VerticalPanel addStyleNames="{style.marginLeft}">
+					<g:HorizontalPanel>
+						<g:Button ui:field="newBtn">New</g:Button>
+						<g:Button ui:field="cancelBtn">Cancel</g:Button>
+						<g:Button ui:field="saveBtn">Save</g:Button>
+						<g:Button ui:field="deleteBtn">Delete</g:Button>
+					</g:HorizontalPanel>
+					<g:FlexTable ui:field="form" />
+				</g:VerticalPanel>
+			</g:HorizontalPanel>
+			<g:HTML ui:field="log" />
+		</g:VerticalPanel>
+	</g:ScrollPanel>
 </ui:UiBinder> 

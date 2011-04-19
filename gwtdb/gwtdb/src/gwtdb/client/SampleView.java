@@ -34,7 +34,7 @@ public class SampleView extends Composite implements Display {
 	interface SampleUiBinder extends UiBinder<Widget, SampleView> {
 	}
 	
-	private ClientEntity entity;
+	private ClientEntity entity = new ClientEntity("Contact");
 
 	public SampleView() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -57,12 +57,12 @@ public class SampleView extends Composite implements Display {
 
 		switch (empty) {
 		case EMPTY:
-			entity = null; // wipe out previously stored entity
+			entity = new ClientEntity("Contact"); // wipe out previously stored entity
 			form.setText(0, 0, "Name");
 			form.setText(1, 0, "E-Mail");
 			break;
 		case CREATE:
-			entity = null; // wipe out previously stored entity
+			entity = new ClientEntity("Contact"); // wipe out previously stored entity
 			name.setText("");
 			mail.setText("");
 			form.setText(0, 0, "Name");
