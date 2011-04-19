@@ -25,6 +25,7 @@ public class SamplePresenter {
 		void switchView(View create);
 		ClientEntity getEntity();
 		HasKeyUpHandlers getNameBox();
+		HasKeyUpHandlers getEmailBox();
 	}
 
 	private Display view;
@@ -77,14 +78,16 @@ public class SamplePresenter {
 				save();
 			}
 		});
-		view.getNameBox().addKeyUpHandler(new KeyUpHandler() {
+		final KeyUpHandler saveOnEnter = new KeyUpHandler() {
 			@Override
 			public void onKeyUp(KeyUpEvent event) {
 				if (KeyCodes.KEY_ENTER == event.getNativeKeyCode()) {
 					save();
 				}
 			}
-		});
+		};
+		view.getEmailBox().addKeyUpHandler(saveOnEnter);
+		view.getNameBox().addKeyUpHandler(saveOnEnter);
 	}
 
 	private void save() {

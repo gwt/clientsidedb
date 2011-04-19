@@ -12,7 +12,10 @@
 	</ui:style>
 	<g:VerticalPanel>
 		<g:HorizontalPanel addStyleNames="{style.marginBottom}">
-			<c:CellTable ui:field="table" />
+			<g:VerticalPanel>
+				<c:CellTable ui:field="table" />
+				<c:SimplePager ui:field="pager" />
+			</g:VerticalPanel>
 			<g:VerticalPanel addStyleNames="{style.marginLeft}">
 				<g:HorizontalPanel>
 					<g:Button ui:field="newBtn">New</g:Button>

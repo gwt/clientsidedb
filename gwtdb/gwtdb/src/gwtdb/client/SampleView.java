@@ -7,8 +7,11 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasKeyUpHandlers;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -30,6 +33,8 @@ public class SampleView extends Composite implements Display {
 
 	interface SampleUiBinder extends UiBinder<Widget, SampleView> {
 	}
+	
+	private ClientEntity entity;
 
 	public SampleView() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -47,11 +52,17 @@ public class SampleView extends Composite implements Display {
 		deleteBtn.setVisible(view == View.EDIT);
 	}
 
-	private void configureForm(final View empty, final ClientEntity entity) {
+	private void configureForm(final View empty) {
 		form.clear(true);
 
 		switch (empty) {
+		case EMPTY:
+			entity = null; // wipe out previously stored entity
+			form.setText(0, 0, "Name");
+			form.setText(1, 0, "E-Mail");
+			break;
 		case CREATE:
+			entity = null; // wipe out previously stored entity
 			name.setText("");
 			mail.setText("");
 			form.setText(0, 0, "Name");
@@ -67,31 +78,23 @@ public class SampleView extends Composite implements Display {
 			form.setWidget(0, 1, name);
 			form.setWidget(1, 1, mail);
 			break;
-		case EMPTY:
-			form.setText(0, 0, "Name");
-			form.setText(1, 0, "E-Mail");
-			break;
 		default:
 			break;
 		}
 	}
 
 	@Override
-	public void switchView(View view) {
-		switchView(view, null);
-	}
-
-	private void switchView(View view, ClientEntity entity) {
-		configureForm(view, entity);
+	public void switchView(final View view) {
+		configureForm(view);
 		configureButtons(view);
 	}
 
 	@Override
 	public ClientEntity getEntity() {
-		final ClientEntity e = new ClientEntity("Contact");
-		e.setProperty("Name", name.getText());
-		e.setProperty("Mail", mail.getText());
-		return e;
+		// assume entity is not null
+		entity.setProperty("Name", name.getText());
+		entity.setProperty("Mail", mail.getText());
+		return entity;
 	}
 
 	private void configureTable() {
@@ -120,18 +123,22 @@ public class SampleView extends Composite implements Display {
 		model.addSelectionChangeHandler(new Handler() {
 			@Override
 			public void onSelectionChange(SelectionChangeEvent event) {
-				switchView(View.EDIT, model.getSelectedObject());
+				entity = model.getSelectedObject();
+				switchView(View.EDIT);
 			}
 		});
 		table.setSelectionModel(model);
-
+		
 		tableDataProvider.addDataDisplay(table);
+		pager.setDisplay(table);
 	}
 
 	// for form
 	TextBox name = new TextBox();
 	TextBox mail = new TextBox();
 
+	@UiField
+	SimplePager pager;
 	@UiField
 	HTML log;
 	@UiField
@@ -148,6 +155,10 @@ public class SampleView extends Composite implements Display {
 	CellTable<ClientEntity> table;
 	private ListDataProvider<ClientEntity> tableDataProvider = new ListDataProvider<ClientEntity>();
 
+	@UiFactory SimplePager makePager() {
+		return new SimplePager(TextLocation.CENTER);
+	}
+	
 	@Override
 	public void append(String message) {
 		log.setHTML(log.getHTML() + "<br />" + message);
@@ -189,5 +200,10 @@ public class SampleView extends Composite implements Display {
 	@Override
 	public HasKeyUpHandlers getNameBox() {
 		return name;
+	}
+
+	@Override
+	public HasKeyUpHandlers getEmailBox() {
+		return mail;
 	}
 }

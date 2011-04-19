@@ -1,10 +1,10 @@
 package gwtdb.test;
 
-import java.util.HashMap;
-
 import gwtdb.client.ClientEntity;
 import gwtdb.server.ModificationServiceImpl;
 import gwtdb.server.ReadServiceImpl;
+
+import java.util.HashMap;
 
 public class ModiferAndReaderTest extends AbstractDatastoreTest {
 	private ModificationServiceImpl modifier;
