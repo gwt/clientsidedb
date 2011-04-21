@@ -131,12 +131,15 @@ public class SampleView extends Composite implements Display {
 		
 		tableDataProvider.addDataDisplay(table);
 		pager.setDisplay(table);
+		pager.setPageSize(10);
 	}
 
 	// for form
 	TextBox name = new TextBox();
 	TextBox mail = new TextBox();
 
+	@UiField
+	Button createDemoDataBtn;
 	@UiField
 	SimplePager pager;
 	@UiField
@@ -197,6 +200,11 @@ public class SampleView extends Composite implements Display {
 		}
 	}
 
+	@Override
+	public HasClickHandlers getCreateDemoDataBtn() {
+		return createDemoDataBtn;
+	}
+	
 	@Override
 	public HasKeyUpHandlers getNameBox() {
 		return name;

@@ -35,6 +35,14 @@
 		<url-pattern>/gwtdb/modify</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>demoServlet</servlet-name>
+		<servlet-class>gwtdb.server.DemoServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>demoServlet</servlet-name>
+		<url-pattern>/gwtdb/demo</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
 		<welcome-file>Tighties.html</welcome-file>

@@ -23,6 +23,7 @@
 						<g:Button ui:field="cancelBtn">Cancel</g:Button>
 						<g:Button ui:field="saveBtn">Save</g:Button>
 						<g:Button ui:field="deleteBtn">Delete</g:Button>
+						<g:Button ui:field="createDemoDataBtn">Demo data</g:Button>
 					</g:HorizontalPanel>
 					<g:FlexTable ui:field="form" />
 				</g:VerticalPanel>

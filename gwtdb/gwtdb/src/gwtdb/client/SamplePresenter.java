@@ -4,6 +4,7 @@ import gwtdb.client.SampleView.View;
 
 import java.util.HashMap;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -26,10 +27,12 @@ public class SamplePresenter {
 		ClientEntity getEntity();
 		HasKeyUpHandlers getNameBox();
 		HasKeyUpHandlers getEmailBox();
+		HasClickHandlers getCreateDemoDataBtn();
 	}
 
 	private Display view;
 	private ClientSideDB db;
+	private DemoDataServiceAsync demo = GWT.create(DemoDataService.class);
 
 	public SamplePresenter(final Display view, final ClientSideDB db) {
 		this.view = view;
@@ -76,6 +79,20 @@ public class SamplePresenter {
 			@Override
 			public void onClick(ClickEvent event) {
 				save();
+			}
+		});
+		view.getCreateDemoDataBtn().addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				demo.create(1000, new AsyncCallback<Void>() {
+					@Override
+					public void onSuccess(Void result) {
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+				});
 			}
 		});
 		final KeyUpHandler saveOnEnter = new KeyUpHandler() {
