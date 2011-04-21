@@ -5,16 +5,13 @@ import gwtdb.client.ModifierService;
 
 import java.util.logging.Logger;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-public class ModificationServiceImpl extends AbstractDatastoreService implements ModifierService {
+public class ModificationServiceImpl extends DatastoreLayer implements ModifierService {
 	private static final long serialVersionUID = -8882436882547916759L;
-	private static final DatastoreService db = DatastoreServiceFactory.getDatastoreService();
 
 	@Override
 	public void put(final ClientEntity entity) {
@@ -27,6 +24,8 @@ public class ModificationServiceImpl extends AbstractDatastoreService implements
 
 			final Key k = db.put(e);
 
+			invalidateReadCache(entity.getKind());
+			
 			// TODO run this asynchronously
 			// TODO delete dead clients from set
 			NotificationServiceImpl.notifyClients("new entity added/updated", k);
@@ -34,5 +33,9 @@ public class ModificationServiceImpl extends AbstractDatastoreService implements
 			final Logger l = Logger.getLogger(ModificationServiceImpl.class.getSimpleName());
 			l.warning("Cannot update existing entity " + entity.getKind() + "/" + entity.getId());
 		}
+	}
+	
+	private void invalidateReadCache(final String kind) {
+		memcacheService.put(getGetAllIsValidKey(kind), false);
 	}
 }

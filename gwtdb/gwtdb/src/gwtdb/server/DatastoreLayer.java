@@ -7,9 +7,8 @@ import java.util.Map;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-abstract public class AbstractDatastoreService extends RemoteServiceServlet {
+abstract public class DatastoreLayer extends MemcacheLayer {
 	private static final long serialVersionUID = 163908598771316840L;
 	protected static final DatastoreService db = DatastoreServiceFactory.getDatastoreService();
 
