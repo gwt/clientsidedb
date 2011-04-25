@@ -14,27 +14,29 @@ public class ModificationServiceImpl extends DatastoreLayer implements ModifierS
 	private static final long serialVersionUID = -8882436882547916759L;
 
 	@Override
-	public void put(final ClientEntity entity) {
+	public void put(final ClientEntity clientEntity) {
 		try {
-			final Entity e = (entity.getId() > 0) ? db.get(KeyFactory.createKey(entity.getKind(), entity.getId())) : new Entity(entity.getKind());
+			final Entity entity = (clientEntity.getId() > 0) ? db.get(KeyFactory.createKey(clientEntity.getKind(), clientEntity.getId())) : new Entity(clientEntity.getKind());
 
-			for (final String key : entity.keys()) {
-				e.setProperty(key, entity.get(key));
+			for (final String key : clientEntity.keys()) {
+				entity.setProperty(key, clientEntity.get(key));
 			}
 
-			final Key k = db.put(e);
+			final Key k = db.put(entity);
+			// insert current id to make sure it is visible in the update description that is sent to the clients
+			clientEntity.setId(k.getId());
 
-			invalidateReadCache(entity.getKind());
-			
+			invalidateReadCache(clientEntity.getKind());
+
 			// TODO run this asynchronously
 			// TODO delete dead clients from set
-			NotificationServiceImpl.notifyClients("new entity added/updated", k);
+			NotificationServiceImpl.notifyClients("update?" + clientEntity.toString());
 		} catch (EntityNotFoundException e1) {
 			final Logger l = Logger.getLogger(ModificationServiceImpl.class.getSimpleName());
-			l.warning("Cannot update existing entity " + entity.getKind() + "/" + entity.getId());
+			l.warning("Cannot update existing entity " + clientEntity.getKind() + "/" + clientEntity.getId());
 		}
 	}
-	
+
 	private void invalidateReadCache(final String kind) {
 		memcacheService.put(getGetAllIsValidKey(kind), false);
 	}

@@ -42,7 +42,9 @@ public class SamplePresenter {
 			@Override
 			public void handle(UpdateEvent event) {
 				view.append("received update");
-				
+
+				db.replace(event.getEntity());
+/*				
 				db.getAll(new String[] { "Contact" }, new AsyncCallback<HashMap<String, ClientEntity[]>>() {
 					@Override
 					public void onSuccess(HashMap<String, ClientEntity[]> result) {
@@ -52,7 +54,7 @@ public class SamplePresenter {
 					@Override
 					public void onFailure(Throwable caught) {
 					}
-				});
+				});*/
 			}
 		});
 

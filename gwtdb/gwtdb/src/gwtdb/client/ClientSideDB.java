@@ -45,7 +45,7 @@ public class ClientSideDB implements ReaderServiceAsync {
 	// Updates are only received (i.e. this method is only called) when it has one parameter (?)
 	private static void onUpdate(final String data) {
 		dirty = true;
-		bus.fireEvent(new UpdateEvent());
+		bus.fireEvent(new UpdateEvent(ClientEntity.fromUpdateDescription(data)));
 		view.append("update: " + data);
 	}
 	
@@ -109,5 +109,10 @@ public class ClientSideDB implements ReaderServiceAsync {
 	
 	public static EventBus getBus() {
 		return bus;
+	}
+
+	// add/update given entity to/in cache
+	public void replace(final ClientEntity entity) {
+		
 	}
 }
