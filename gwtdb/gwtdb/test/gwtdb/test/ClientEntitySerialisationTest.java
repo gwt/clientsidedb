@@ -20,4 +20,13 @@ public class ClientEntitySerialisationTest extends TestCase {
 		assertEquals("Erwin", c.get("Name"));
 		assertEquals("Belzig", c.get("LastName"));
 	}
+	
+	public void testFromStringEmptyProperty() {
+		final ClientEntity c  = ClientEntity.fromUpdateDescription("update?id=23&kind=Contact&Name=Erwin&LastName=&");
+		
+		assertEquals("Contact", c.getKind());
+		assertEquals(23, c.getId());
+		assertEquals("Erwin", c.get("Name"));
+		assertEquals("", c.get("LastName"));
+	}
 }
