@@ -198,6 +198,7 @@ public class SampleView extends Composite implements Display {
 		for (final ClientEntity e : clientEntities) {
 			tableDataProvider.getList().add(e);
 		}
+		tableDataProvider.refresh();
 	}
 
 	@Override

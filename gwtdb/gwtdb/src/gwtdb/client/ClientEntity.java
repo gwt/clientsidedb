@@ -57,7 +57,12 @@ public class ClientEntity implements Serializable {
 		for (final String keyValuePair : entityDescription.split("&")) {
 			final String[] singlePair = keyValuePair.split("=");
 			final String key = singlePair[0];
-			final String value = singlePair[1];
+			
+			if (key.trim().isEmpty()) {
+				continue;
+			}
+			
+			final String value = singlePair.length > 1 ? singlePair[1] : ""; // avoid ArrayOutOfBoundsException for empty properties
 
 			if ("id".equals(key)) {
 				entity.setId(Long.parseLong(value));

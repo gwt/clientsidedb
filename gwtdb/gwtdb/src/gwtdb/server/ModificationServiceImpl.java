@@ -30,6 +30,7 @@ public class ModificationServiceImpl extends DatastoreLayer implements ModifierS
 
 			// TODO run this asynchronously
 			// TODO delete dead clients from set
+			// TODO distinguish between create / update / delete
 			NotificationServiceImpl.notifyClients("update?" + clientEntity.toString());
 		} catch (EntityNotFoundException e1) {
 			final Logger l = Logger.getLogger(ModificationServiceImpl.class.getSimpleName());

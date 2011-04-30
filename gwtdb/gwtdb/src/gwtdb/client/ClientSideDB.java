@@ -2,6 +2,7 @@ package gwtdb.client;
 
 import gwtdb.client.SamplePresenter.Display;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
@@ -18,7 +19,7 @@ public class ClientSideDB implements ReaderServiceAsync {
 
 	private HashMap<String, ClientEntity[]> cache = new HashMap<String, ClientEntity[]>();
 	private static boolean dirty = false;
-	
+
 	public static ClientSideDB instance(final Display view, final EventBus bus) {
 		if (null == instance) {
 			ClientSideDB.view = view;
@@ -42,13 +43,14 @@ public class ClientSideDB implements ReaderServiceAsync {
 		});
 	}
 
-	// Updates are only received (i.e. this method is only called) when it has one parameter (?)
+	// Updates are only received (i.e. this method is only called) when it has
+	// one parameter (?)
 	private static void onUpdate(final String data) {
 		dirty = true;
 		bus.fireEvent(new UpdateEvent(ClientEntity.fromUpdateDescription(data)));
 		view.append("update: " + data);
 	}
-	
+
 	private native void setupChannel(final String token) /*-{
 		var channel = new $wnd.goog.appengine.Channel(token);
 		var socket = channel.open();
@@ -66,7 +68,8 @@ public class ClientSideDB implements ReaderServiceAsync {
 		}
 		// Element has not been found
 		// TODO
-		callback.onFailure(null); // call onFailure to indicate that element has not been found.
+		callback.onFailure(null); // call onFailure to indicate that element has
+									// not been found.
 	}
 
 	@Override
@@ -94,25 +97,50 @@ public class ClientSideDB implements ReaderServiceAsync {
 
 	public void put(ClientEntity entity, final AsyncCallback<Void> callback) {
 		dirty = true;
-		
+
 		modifier.put(entity, new AsyncCallback<Void>() {
 			@Override
 			public void onSuccess(Void result) {
 				callback.onSuccess(result);
 			}
-			
+
 			@Override
 			public void onFailure(Throwable caught) {
 			}
 		});
 	}
-	
+
 	public static EventBus getBus() {
 		return bus;
 	}
 
 	// add/update given entity to/in cache
-	public void replace(final ClientEntity entity) {
+	public void update(final ClientEntity updatedEntity) {
+		final String kind = updatedEntity.getKind();
+		final ClientEntity[] old = cache.get(kind);
+		boolean updated = false;
+
+		// update existing entity in cache
+		for (final ClientEntity e : old) {
+			if (e.getId() == updatedEntity.getId()) {
+				for (final String key : updatedEntity.keys()) {
+					e.setProperty(key, updatedEntity.get(key));
+				}
+				updated = true;
+				break;
+			}
+		}
+
+		// add entity to cache
+		if (!updated) {
+			final ClientEntity[] newArray = new ClientEntity[old.length + 1];
+			for (int i=0; i<old.length; i++) {
+				newArray[i] = old[i];
+			}
+			newArray[old.length] = updatedEntity;
+			cache.put(kind, newArray);
+		}
 		
+		dirty = false;
 	}
 }
